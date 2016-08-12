@@ -5,8 +5,7 @@ from .models import Album
 
 def index(request):
     albums = Album.objects.all()
-    context = {'albums': albums}
-    return render(request, 'music/index.html', context)
+    return render(request, 'music/index.html', {'albums': albums})
 
 
 def error(request):
@@ -14,4 +13,9 @@ def error(request):
 
 
 def details(request, albumId):
-    return HttpResponse('<h2 style="text-align:center"> You\'re at Album No : ' + albumId + '</h2>')
+    try:
+        album = {'album' : Album.objects.get(pk=albumId)}
+    except Album.DoesNotExist:
+        raise Http404('Oh no! That one has escaped somehow! -_-');
+    return render(request, 'music/details.html', album  )
+
