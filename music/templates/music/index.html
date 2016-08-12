@@ -1,0 +1,30 @@
+<style>
+    li{
+        margin-left: 30%
+    }
+    li a{
+        font-size: 1.8em;
+        text-align: center;
+        color: #efabc1;
+    }
+    h1{
+        color: #fe10ab;
+    }
+    html{
+        background-color: #aa4b6;
+    }
+</style>
+<!--<link rel="stylesheet" type="text/css" href="templates/music/style.css">-->
+<h1 style="text-align:center"> This is Music!!!! :) </h1>
+<hr><br>
+{% if albums %}
+    <ul>
+        {% for album in albums %}
+            <li>
+                <a href="/music/{{ album.id }}"> {{ album.albumTitle }}</a>
+            </li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <h2> No Albums Found!!!</h2>
+{% endif %}
