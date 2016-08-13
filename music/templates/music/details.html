@@ -1,9 +1,39 @@
-<img src = "{{ album.albumArt }}" height="300">
-<h2> {{ album.albumTitle }} </h2>
-<h3> {{ album.artist }} </h3>
+<!--extend another file into this-->
+{% extends 'music/base.html' %}
 
-<ul>
-    {% for song in album.song_set.all%}
-        <li>{{ song.songTitle }}.{{ song.fileType }}</li>
-    {% endfor %}
-</ul>
+<!--start a block named body to be replaced by base-->
+{% block body %}
+    <!--Album Header-->
+    <img src = "{{ album.albumArt }}" height="300">
+    <h2> {{ album.albumTitle }} </h2>
+    <h3> {{ album.artist }} </h3>
+
+    <!--Error display area-->
+    {% if error_message %}
+        <p><strong> {{ error_message }} </strong></p>
+    {% endif %}
+
+    <!--form for the love option-->
+    <form action="{% url 'music:loveIt' album.id  %}" method="post">
+        <!--security token - mandatory-->
+        {% csrf_token %}
+    <ul>
+        <!--loop through all songs of the selected album-->
+        {% for song in album.song_set.all%}
+            <li>
+                <input type="radio" id="song-{{ forloop.counter }}" name = "song" value="{{ song.id }}" />
+                <label for="song-{{ forloop.counter }}">
+                    {{ song.songTitle }}
+                    {% if song.isFavorite %}
+                        <!--display icon-->
+                        <img src="http://i.imgur.com/b9b13Rd.png" />
+                    {% endif %}
+                </label>
+
+            </li>
+        {% endfor %}
+
+    </ul>
+        <input type="submit" value="Favorite" />
+    </form>
+{% endblock %}

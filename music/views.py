@@ -1,6 +1,8 @@
 from django.http import HttpResponse, Http404
-from django.shortcuts import render
-from .models import Album
+from django.shortcuts import render, get_object_or_404
+from .models import Album, Song
+
+# each function renders the content for the views
 
 
 def index(request):
@@ -8,14 +10,20 @@ def index(request):
     return render(request, 'music/index.html', {'albums': albums})
 
 
-def error(request):
-    return HttpResponse('<h1 style="text-align:center">Error! Wrong Page!!</h1>')
-
-
 def details(request, albumId):
-    try:
-        album = {'album' : Album.objects.get(pk=albumId)}
-    except Album.DoesNotExist:
-        raise Http404('Oh no! That one has escaped somehow! -_-');
-    return render(request, 'music/details.html', album  )
+    album = {'album' : get_object_or_404(Album, pk=albumId)}
+    return render(request, 'music/details.html', album)
 
+
+def loveIt(request, albumId):
+    album = get_object_or_404(Album, pk=albumId)
+    try:
+        # modify love option
+        song = album.song_set.get(id=request.POST['song'])
+        song.isFavorite = not song.isFavorite
+        song.save()
+        # redirect
+        return render(request, 'music/details.html', {'album': album})
+
+    except (KeyError, Song.DoesNotExist):
+        return render(request, 'music/details.html', {'album': album, 'error_message': "Invalid Song"})
